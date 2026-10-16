@@ -1,0 +1,309 @@
+/* ==========================
+   STAR TREK HOLOGRAM THEME
+   ========================== */
+
+:root {
+    --bg: #04070d;
+    --panel: rgba(20, 180, 255, 0.08);
+    --border: rgba(100, 220, 255, 0.5);
+
+    --primary: #5de2ff;
+    --secondary: #6bb4ff;
+    --text: #ffb366;
+
+    --cyan: #5de2ff;
+    --orange: #ffb366;
+    --purple: #c48cff;
+    --blue: #6bb4ff;
+
+    --glow:
+        0 0 5px rgba(69, 223, 255, .6),
+        0 0 15px rgba(69, 223, 255, .4),
+        0 0 30px rgba(69, 223, 255, .2);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background:
+        radial-gradient(circle at top,
+            rgba(50, 100, 255, .15),
+            transparent 50%),
+        #04070d;
+
+    color: var(--text);
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    min-height: 100vh;
+    padding: 30px;
+}
+
+/* ==========================
+   PAGE TITLE
+   ========================== */
+
+.holo-title {
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--primary);
+    text-shadow: var(--glow);
+    margin-bottom: 20px;
+}
+
+/* ==========================
+   PANEL
+   ========================== */
+
+.holo-panel {
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+
+    backdrop-filter: blur(10px);
+
+    box-shadow: var(--glow);
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+/* animated scan line */
+.holo-panel::before {
+    content: "";
+
+    position: absolute;
+
+    top: -100%;
+
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background:
+        linear-gradient(to bottom,
+            transparent,
+            rgba(69, 223, 255, .08),
+            transparent);
+
+    animation: scan 6s linear infinite;
+}
+
+@keyframes scan {
+    from {
+        top: -100%;
+    }
+
+    to {
+        top: 100%;
+    }
+}
+
+/* ==========================
+   BUTTONS
+   ========================== */
+
+.holo-button {
+    background: transparent;
+
+    color: var(--primary);
+
+    border: 1px solid var(--primary);
+
+    padding: 10px 20px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: all .25s ease;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+}
+
+.holo-button:hover {
+    background: rgba(69, 223, 255, .15);
+
+    box-shadow: var(--glow);
+
+    transform: translateY(-2px);
+}
+
+/* ==========================
+   INPUTS
+   ========================== */
+
+.holo-input {
+    width: 100%;
+
+    padding: 12px;
+
+    background: rgba(255, 255, 255, .04);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    color: white;
+
+    outline: none;
+}
+
+.holo-input:focus {
+    box-shadow: var(--glow);
+}
+
+/* ==========================
+   STATUS
+   ========================== */
+
+.holo-status {
+    display: inline-block;
+
+    padding: 5px 12px;
+
+    border-radius: 20px;
+
+    border: 1px solid var(--primary);
+
+    color: var(--primary);
+
+    text-shadow: var(--glow);
+}
+
+/* ==========================
+   GRID
+   ========================== */
+
+.holo-grid {
+    display: grid;
+
+    gap: 20px;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* ==========================
+   CARD
+   ========================== */
+
+.holo-card {
+
+    margin: 8px 0px;
+
+    background: rgba(20, 180, 255, .05);
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    padding: 20px;
+
+    transition: .3s;
+}
+
+.holo-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: var(--glow);
+}
+
+.holo-card h3 {
+    color: var(--secondary);
+
+    margin-bottom: 10px;
+}
+
+
+.holo-panel,
+.holo-card {
+    animation: holoFlicker 8s infinite;
+}
+
+@keyframes holoFlicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .96;
+        color: crimson;
+    }
+
+    51% {
+        opacity: .98;
+    }
+}
+
+body::before {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        repeating-linear-gradient(180deg,
+            rgba(255, 255, 255, .02) 0px,
+            rgba(239, 4, 4, 0.541) 1px,
+            transparent 2px,
+            transparent 4px);
+
+    opacity: .3;
+}
+
+.lcars-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.pill-warning {
+    width: 80px;
+    height: 24px;
+    border-radius: 20px;
+    background: #ffb366;
+    box-shadow: 0 0 12px rgba(255, 179, 102, .7);
+}
+
+
+.pill-secondary {
+    width: 80px;
+    height: 24px;
+    border-radius: 20px;
+    background: rgb(196, 140, 255);
+    box-shadow: 0 0 12px rgba(196, 140, 255, .7);
+}
+
+
+.pill-primary {
+    width: 80px;
+    height: 24px;
+    border-radius: 20px;
+    background: rgb(107, 180, 255);
+    box-shadow: 0 0 12px rgba(107, 180, 255, .7);
+}
