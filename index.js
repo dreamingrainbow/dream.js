@@ -28,37 +28,3 @@ const Components = {
 export { Components };
 
 export default Components;
-
-
-
-/*
-
-// app.js
-
-import Dream from "./dream.js";
-
-import { HoloCard } from "./components/HoloCard.js";
-import { HoloButton } from "./components/HoloButton.js";
-
-const App = () => {
-
-    
-};
-
-Dream.onReady({
-    el: "app",
-    node: HoloCard({
-        children: [
-            {
-                el: "h2",
-                content: "Welcome"
-            },
-            HoloButton({
-                id: "connect",
-                text: "Connect Wallet"
-            })
-        ]
-    })
-}, App);
-
-*/
