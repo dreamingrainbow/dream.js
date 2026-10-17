@@ -208,6 +208,92 @@ const useState = initial => {
     ];
 };
 
+
+const state = Object.create(null);
+const registry = {};
+
+const register = (name, initial) => {
+    //Check if property is defined throw error if exists. (cannot register the same name twice.)
+    if (Object.hasOwn(state, name)) {
+        throw new Error(
+            `Dream State ('${name}') already exists.`
+        );
+    }
+
+    let value = initial;
+
+    registry[name] = {
+        initial,
+        subscribers: []
+    };
+
+    // assign state getters/setters
+    Object.defineProperty(state, name, {
+        enumerable: true,
+        configurable: true,
+        get() {
+            return value;
+        },
+        set(newValue) {
+            if (value === newValue) {
+                return;
+            }
+            const oldValue = value;
+            value = newValue;
+            registry[name].subscribers.forEach(callback => {
+                callback(newValue, oldValue);
+            });
+        }
+    });
+};
+
+const subscribe = (name, callback) => {
+    if (!registry[name]) {
+        throw new Error(
+            `Dream State ('${name}') does not exist.`
+        );
+    }
+    registry[name].subscribers.push(callback);
+    return () => {
+        registry[name].subscribers =
+            registry[name].subscribers.filter(
+                subscriber => subscriber !== callback
+            );
+    };
+};
+
+const unsubscribeAll = name => {
+    if (!registry[name]) {
+        return;
+    }
+
+    registry[name].subscribers.length = 0;
+};
+
+const unregister = name => {
+    if (!registry[name]) {
+        return;
+    }
+    delete registry[name];
+    delete state[name];
+};
+
+const exists = name => Object.hasOwn(state, name);
+
+const registered = () => Object.keys(registry);
+
+const reset = name => {
+    if (!registry[name]) {
+        return;
+    }
+
+    state[name] = registry[name].initial;
+};
+
+const resetAll = () => {
+    Object.keys(registry).forEach(reset);
+};
+
 const Dream = {
     VERSION,
     buildDom,
@@ -218,7 +304,16 @@ const Dream = {
     onReady,
     render,
     update,
-    useState
+    useState,
+    state,
+    register,
+    subscribe,
+    unsubscribeAll,
+    unregister,
+    exists,
+    registered,
+    reset,
+    resetAll
 };
 
 
