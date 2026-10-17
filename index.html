@@ -14,10 +14,7 @@
         import { HoloCard } from "./components/HoloCard.js";
         import { HoloButton } from "./components/HoloButton.js";
 
-        const [connected, setConnected] = Dream.useState({
-            connect: true
-        });
-
+        const [getConnected, setConnected] = Dream.useState(true);
 
         const View = () => HoloCard({
             children: [
@@ -25,7 +22,7 @@
                     el: "h2",
                     content: "Welcome"
                 },
-                connected ? HoloButton({
+                getConnected() ? HoloButton({
                     id: "connect",
                     text: "Connect Wallet"
                 }) : null
@@ -54,7 +51,7 @@
                 }, App);
             };
 
-            if (connected) {
+            if (getConnected()) {
                 document
                     .getElementById("connect")
                     ?.addEventListener(
