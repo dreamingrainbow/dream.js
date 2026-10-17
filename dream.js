@@ -79,7 +79,9 @@ function buildDom(node) {
     // Children
     if (Array.isArray(node.children)) {
         node.children.forEach(child => {
-            element.appendChild(buildDom(child));
+            if (child) {
+                element.appendChild(buildDom(child));
+            }
         });
     }
 
@@ -160,7 +162,11 @@ const render = ({ el, node }) => {
         _e = document.body;
     }
     if (_e) {
-        _e.appendChild(node);
+        if (node instanceof Node) {
+            _e.appendChild(node);
+        } else {
+            _e.appendChild(buildDom(node));
+        }
     }
 }
 
