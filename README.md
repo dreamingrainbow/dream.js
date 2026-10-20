@@ -15,7 +15,6 @@ Instead of JSX, templates, or virtual DOMs, Dream uses a simple serializable obj
 
 Dream favors simplicity, separation of concerns, and plain JavaScript.
 
-<iframe src="https://www.dreamingrainbow.com/"></iframe>
 
 ---
 
