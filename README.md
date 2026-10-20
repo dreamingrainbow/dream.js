@@ -371,3 +371,14 @@ Copyright (c) 2026 Michael Dennis
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+
+# Join our Discord
+https://discord.gg/ep2vE5hXZs
+
+# Donations
+If you like this project and want to help support the developer you can send donations to :
+$dreamingrainbow on CashApp.
+or 
+Send any crypto to :
+> 0x52e2e41F22A3adC894d8746146b449ec05d60179
