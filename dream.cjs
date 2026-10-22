@@ -228,6 +228,112 @@ var reset = (name) => {
 var resetAll = () => {
   Object.keys(registry).forEach(reset);
 };
+var pipelines = {};
+var createDefaultExecute = () => [
+  () => {
+  },
+  (err) => {
+    throw err;
+  }
+];
+var _onBeforeAll = (name) => {
+  if (!pipelineExists(name)) {
+    pipelines[name] = {
+      before: [],
+      execute: createDefaultExecute(),
+      after: []
+    };
+  }
+};
+var pipelineExists = (name) => name in pipelines;
+var deletePipeline = (name) => {
+  delete pipelines[name];
+};
+var clearPipeline = (name) => {
+  if (!pipelineExists(name)) return;
+  pipelines[name].before = [];
+  pipelines[name].execute = createDefaultExecute();
+  pipelines[name].after = [];
+};
+var getPipeline = (name) => {
+  if (!pipelineExists(name)) return;
+  return pipelines[name];
+};
+var createPipeline = (name) => {
+  _onBeforeAll(name);
+  return pipelines[name];
+};
+var onBefore = (name, fn = () => {
+}, errfn = (err) => {
+  throw err;
+}) => {
+  _onBeforeAll(name);
+  const hook = [fn, errfn];
+  pipelines[name].before.push(hook);
+  return () => {
+    if (!pipelineExists(name)) return;
+    const i = pipelines[name].before.indexOf(hook);
+    if (i !== -1) {
+      pipelines[name].before.splice(i, 1);
+    }
+  };
+};
+var onExecute = (name, fn = () => {
+}, errfn = (err) => {
+  throw err;
+}) => {
+  _onBeforeAll(name);
+  pipelines[name].execute = [fn, errfn];
+};
+var onAfter = (name, fn = () => {
+}, errfn = (err) => {
+  throw err;
+}) => {
+  _onBeforeAll(name);
+  const hook = [fn, errfn];
+  pipelines[name].after.push(hook);
+  return () => {
+    if (!pipelineExists(name)) return;
+    const i = pipelines[name].after.indexOf(hook);
+    if (i !== -1) {
+      pipelines[name].after.splice(i, 1);
+    }
+  };
+};
+var run = async (name, ...initParams) => {
+  if (!pipelineExists(name)) {
+    throw new Error(`Pipeline ${name} not found.`);
+  }
+  const re = {
+    before: [],
+    execute: null,
+    after: []
+  };
+  const _pipeline = pipelines[name];
+  for (const _h of _pipeline.before) {
+    const [beforeFn, beforeErrFn] = _h;
+    try {
+      re.before.push(await beforeFn(...initParams));
+    } catch (e) {
+      await beforeErrFn(e);
+    }
+  }
+  const [callFn, callErrFn] = _pipeline.execute;
+  try {
+    re.execute = await callFn(...initParams);
+  } catch (e) {
+    await callErrFn(e);
+  }
+  for (const _h of _pipeline.after) {
+    const [afterFn, afterErrFn] = _h;
+    try {
+      re.after.push(await afterFn(...initParams));
+    } catch (e) {
+      await afterErrFn(e);
+    }
+  }
+  return re;
+};
 var Dream = {
   VERSION,
   buildDom,
@@ -247,7 +353,16 @@ var Dream = {
   exists,
   registered,
   reset,
-  resetAll
+  resetAll,
+  pipelineExists,
+  deletePipeline,
+  clearPipeline,
+  getPipeline,
+  createPipeline,
+  onBefore,
+  onExecute,
+  onAfter,
+  run
 };
 Object.freeze(Dream);
 var dream_default = Dream;

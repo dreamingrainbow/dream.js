@@ -219,7 +219,7 @@ const render = ({ el, node }) => {
  * @param {Function} [fn] - A callback to invoke after rendering.
  * @returns {void}
  */
-const update = ({ el, node }, fn = () => {}) => {
+const update = ({ el, node }, fn = () => { }) => {
     let _e = null;
     if (typeof el === "string") {
         _e = document.getElementById(el);
@@ -240,7 +240,7 @@ const update = ({ el, node }, fn = () => {}) => {
  * @param {Function} [init] - A callback to run when initialization completes.
  * @returns {void}
  */
-const onReady = (passthru, init = () => {}) => {
+const onReady = (passthru, init = () => { }) => {
     if (document.readyState === "loading") {
         document.addEventListener(
             "DOMContentLoaded",
@@ -404,6 +404,103 @@ const resetAll = () => {
     Object.keys(registry).forEach(reset);
 };
 
+/* Internal */
+const pipelines = {};
+const createDefaultExecute = () => [
+    () => { },
+    (err) => { throw err; }
+];
+const _onBeforeAll = (name) => {
+    if (!pipelineExists(name)) {
+        pipelines[name] = {
+            before: [],
+            execute: createDefaultExecute(),
+            after: []
+        };
+    }
+};
+/* External */
+const pipelineExists = (name) => name in pipelines;
+const deletePipeline = (name) => {
+    delete pipelines[name];
+};
+const clearPipeline = (name) => {
+    if (!pipelineExists(name)) return;
+    pipelines[name].before = [];
+    pipelines[name].execute = createDefaultExecute();
+    pipelines[name].after = [];
+};
+const getPipeline = (name) => {
+    if (!pipelineExists(name)) return;
+    return pipelines[name];
+};
+const createPipeline = (name) => {
+    _onBeforeAll(name);
+    return pipelines[name];
+};
+const onBefore = (name, fn = () => { }, errfn = (err) => { throw err; }) => {
+    _onBeforeAll(name);
+    const hook = [fn, errfn];
+    pipelines[name].before.push(hook);
+    return () => {
+        if (!pipelineExists(name)) return;
+        const i = pipelines[name].before.indexOf(hook);
+        if (i !== -1) {
+            pipelines[name].before.splice(i, 1);
+        }
+    };
+};
+const onExecute = (name, fn = () => { }, errfn = (err) => { throw err; }) => {
+    _onBeforeAll(name);
+    pipelines[name].execute = [fn, errfn];
+};
+const onAfter = (name, fn = () => { }, errfn = (err) => { throw err; }) => {
+    _onBeforeAll(name);
+    const hook = [fn, errfn];
+    pipelines[name].after.push(hook);
+    return () => {
+        if (!pipelineExists(name)) return;
+        const i = pipelines[name].after.indexOf(hook);
+        if (i !== -1) {
+            pipelines[name].after.splice(i, 1);
+        }
+    };
+};
+const run = async (name, ...initParams) => {
+    if (!pipelineExists(name)) {
+        throw new Error(`Pipeline ${name} not found.`);
+    }
+    const re = {
+        before: [],
+        execute: null,
+        after: []
+    }
+    const _pipeline = pipelines[name];
+    for (const _h of _pipeline.before) {
+        const [beforeFn, beforeErrFn] = _h;
+        try {
+            re.before.push(await beforeFn(...initParams));
+        } catch (e) {
+            await beforeErrFn(e);
+        }
+    }
+    const [callFn, callErrFn] = _pipeline.execute;
+    try {
+        re.execute = await callFn(...initParams);
+    } catch (e) {
+        await callErrFn(e);
+    }
+    for (const _h of _pipeline.after) {
+        const [afterFn, afterErrFn] = _h;
+        try {
+            re.after.push(await afterFn(...initParams));
+        } catch (e) {
+            await afterErrFn(e);
+        }
+    }
+    return re;
+}
+
 const Dream = {
     VERSION,
     buildDom,
@@ -423,7 +520,16 @@ const Dream = {
     exists,
     registered,
     reset,
-    resetAll
+    resetAll,
+    pipelineExists,
+    deletePipeline,
+    clearPipeline,
+    getPipeline,
+    createPipeline,
+    onBefore,
+    onExecute,
+    onAfter,
+    run,
 };
 
 Object.freeze(Dream);
