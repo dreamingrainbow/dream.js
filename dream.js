@@ -39,6 +39,15 @@
 
 const VERSION = "1.0.0";
 
+/**
+ * Builds a DOM node from a Dream.js object definition.
+ *
+ * Supports text nodes, element nodes, attributes, content, and nested children.
+ * Arrays are treated as a fragment containing multiple child nodes.
+ *
+ * @param {*} node - A node descriptor, nested array, or primitive value.
+ * @returns {Node|DocumentFragment|null} The constructed DOM node, fragment, or null.
+ */
 function buildDom(node) {
     if (!node) {
         return null;
@@ -88,6 +97,15 @@ function buildDom(node) {
     return element;
 }
 
+/**
+ * Converts a DOM node into a Dream.js object representation.
+ *
+ * Text nodes become objects with `el: null` and `content`; regular elements
+ * capture tag name, attributes, child nodes, and optional text content.
+ *
+ * @param {Node|null} node - The DOM node to convert.
+ * @returns {Object|null} A JSON-like object describing the node, or null if it should be ignored.
+ */
 function domToObject(node) {
     if (!node) {
         return null;
@@ -138,20 +156,44 @@ function domToObject(node) {
     return json;
 };
 
+/**
+ * Renders a Dream.js node definition into a target element.
+ *
+ * @param {{ node: Object|Array|Node|null, el: string|Node }} options - The render configuration.
+ * @returns {void}
+ */
 function renderObject({ node, el }) {
     const dom = buildDom(node);
     render({ el, node: dom });
 }
 
+/**
+ * Serializes a DOM node into pretty-printed JSON.
+ *
+ * @param {Node} node - The DOM node to stringify.
+ * @returns {string} A formatted JSON string representing the node.
+ */
 function stringifyObject(node) {
     const obj = domToObject(node);
     return JSON.stringify(obj, null, 2);
 }
 
+/**
+ * Parses a JSON string into a Dream.js node definition and builds DOM.
+ *
+ * @param {string} json - JSON-encoded node data.
+ * @returns {Node|DocumentFragment|null} The rendered DOM output.
+ */
 function parseObject(json) {
     return buildDom(JSON.parse(json));
 }
 
+/**
+ * Appends a node or node descriptor to a target element.
+ *
+ * @param {{ el: string|Node, node: Object|Array|Node|null }} options - The target element and content to render.
+ * @returns {void}
+ */
 const render = ({ el, node }) => {
     let _e = null;
     if (typeof el === "string") {
@@ -170,6 +212,13 @@ const render = ({ el, node }) => {
     }
 }
 
+/**
+ * Clears a container and renders new content while running an optional callback.
+ *
+ * @param {{ el: string|Node, node: Object|Array|Node|null }} options - The target container and new content.
+ * @param {Function} [fn] - A callback to invoke after rendering.
+ * @returns {void}
+ */
 const update = ({ el, node }, fn = () => {}) => {
     let _e = null;
     if (typeof el === "string") {
@@ -184,6 +233,13 @@ const update = ({ el, node }, fn = () => {}) => {
     fn();
 }
 
+/**
+ * Executes a callback once the document is ready, rendering content before or after initialization.
+ *
+ * @param {{ el: string|Node, node: Object|Array|Node|null }|null} passthru - The render target or node payload.
+ * @param {Function} [init] - A callback to run when initialization completes.
+ * @returns {void}
+ */
 const onReady = (passthru, init = () => {}) => {
     if (document.readyState === "loading") {
         document.addEventListener(
@@ -199,6 +255,12 @@ const onReady = (passthru, init = () => {}) => {
     }
 };
 
+/**
+ * Creates a simple getter/setter pair around a state value.
+ *
+ * @param {*} initial - The initial value.
+ * @returns {[Function, Function]} A tuple containing the getter and setter.
+ */
 const useState = initial => {
     let value = initial;
 
@@ -212,6 +274,13 @@ const useState = initial => {
 const state = Object.create(null);
 const registry = {};
 
+/**
+ * Registers a named state entry with an initial value and subscription registry.
+ *
+ * @param {string} name - The state name.
+ * @param {*} initial - The default value for the state.
+ * @returns {void}
+ */
 const register = (name, initial) => {
     //Check if property is defined throw error if exists. (cannot register the same name twice.)
     if (Object.hasOwn(state, name)) {
@@ -247,6 +316,13 @@ const register = (name, initial) => {
     });
 };
 
+/**
+ * Subscribes a callback to changes for a registered state.
+ *
+ * @param {string} name - The registered state name.
+ * @param {Function} callback - The callback to run whenever the state changes.
+ * @returns {Function} A cleanup function that unsubscribes the callback.
+ */
 const subscribe = (name, callback) => {
     if (!registry[name]) {
         throw new Error(
@@ -262,6 +338,12 @@ const subscribe = (name, callback) => {
     };
 };
 
+/**
+ * Removes all subscribers from a registered state.
+ *
+ * @param {string} name - The registered state name.
+ * @returns {void}
+ */
 const unsubscribeAll = name => {
     if (!registry[name]) {
         return;
@@ -270,6 +352,12 @@ const unsubscribeAll = name => {
     registry[name].subscribers.length = 0;
 };
 
+/**
+ * Unregisters a state by name and removes it from the state object.
+ *
+ * @param {string} name - The registered state name.
+ * @returns {void}
+ */
 const unregister = name => {
     if (!registry[name]) {
         return;
@@ -278,10 +366,27 @@ const unregister = name => {
     delete state[name];
 };
 
+/**
+ * Checks whether a state with the provided name exists.
+ *
+ * @param {string} name - The state name to check.
+ * @returns {boolean} True when the state is registered; otherwise false.
+ */
 const exists = name => Object.hasOwn(state, name);
 
+/**
+ * Returns all currently registered state names.
+ *
+ * @returns {string[]} An array of registered state names.
+ */
 const registered = () => Object.keys(registry);
 
+/**
+ * Resets a registered state back to its initial value.
+ *
+ * @param {string} name - The registered state name.
+ * @returns {void}
+ */
 const reset = name => {
     if (!registry[name]) {
         return;
@@ -290,6 +395,11 @@ const reset = name => {
     state[name] = registry[name].initial;
 };
 
+/**
+ * Resets every registered state to its initial value.
+ *
+ * @returns {void}
+ */
 const resetAll = () => {
     Object.keys(registry).forEach(reset);
 };
@@ -318,37 +428,9 @@ const Dream = {
 
 Object.freeze(Dream);
 
-/*
-|--------------------------------------------------------------------------
-| Dream Public API
-|--------------------------------------------------------------------------
-|
-| buildDom(node)
-| domToObject(node)
-| stringifyObject(node)
-| parseObject(json)
-| render({ el, node })
-| renderObject({ el, node })
-| onReady({ el, node })
-| useState(initialState)
-|
-| Examples:
-|
-| const json = Dream.stringifyObject(document.body);
-| const dom = Dream.parseObject(json);
-| 
-| const [count, setCount] = Dream.useState(0);
-|
-*/
-
-
 export { Dream };
 
 export default Dream;
-
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = { Dream };
-}
 
 if (typeof window !== "undefined") {
     window.Dream = Dream;

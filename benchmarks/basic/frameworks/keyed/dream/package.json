@@ -1,0 +1,16 @@
+{
+  "name": "js-framework-benchmark-dream",
+  "version": "1.0.0",
+  "description": "Dream.js keyed",
+  "js-framework-benchmark": {
+    "frameworkVersionFromPackage": "dream",
+    "frameworkHomeURL": "https://github.com/dreamingrainbow/dream.js",
+    "repoURL": "https://github.com/dreamingrainbow/dream.js",
+    "language": "JavaScript"
+  },
+  "scripts": {
+    "dev": "exit 0",
+    "build-prod": "exit 0"
+  },
+  "license": "MIT"
+}

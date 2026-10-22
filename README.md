@@ -60,7 +60,7 @@ import Dream from "./dream.js";
 ### CommonJS
 
 ```js
-const { Dream } = require("./dream.js");
+const { Dream } = require("./dream.cjs");
 ```
 
 ### Browser
