@@ -1,0 +1,20 @@
+{
+  "name": "dream",
+  "version": "1.0.0",
+  "description": "Dream.js | Lightweight DOM Serialization & Rendering Library",
+  "type": "module",
+  "scripts": {
+    "build-prod": "esbuild dream.js --bundle --format=cjs --platform=browser --outfile=dream.cjs"
+  },
+  "exports": {
+    "import": "./dream.js",
+    "require": "./dream.cjs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

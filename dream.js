@@ -432,10 +432,6 @@ export { Dream };
 
 export default Dream;
 
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = { Dream };
-}
-
 if (typeof window !== "undefined") {
     window.Dream = Dream;
 }
