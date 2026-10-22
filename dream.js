@@ -14,7 +14,7 @@
  * Author: Michael Dennis
  * Project: Dream JS
  * Name: dream.js
- * Version: v1.0.0
+ * Version: v1.1.0
  * License: MIT
  * Copyright (c) 2026 Michael Dennis
  *
@@ -37,7 +37,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 
 /**
  * Builds a DOM node from a Dream.js object definition.

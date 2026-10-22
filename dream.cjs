@@ -23,7 +23,7 @@ __export(dream_exports, {
   default: () => dream_default
 });
 module.exports = __toCommonJS(dream_exports);
-var VERSION = "1.0.0";
+var VERSION = "1.1.0";
 function buildDom(node) {
   if (!node) {
     return null;
