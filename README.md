@@ -1,6 +1,7 @@
 # Dream.js
 
 Lightweight DOM Serialization & Rendering Library
+<img width="476" height="244" alt="image" src="https://github.com/user-attachments/assets/9d02fee3-8aa7-40eb-a32e-1de0f55d4044" />
 
 Dream.js is a lightweight framework for building user interfaces using plain JavaScript objects.
 
