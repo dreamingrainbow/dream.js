@@ -364,6 +364,171 @@ Dream.onReady({
 }, App);
 ```
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream.js -- Lightweight DOM Serialization & Rendering Library</title>
+</head>
+
+<body>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            /* horizontal */
+            align-items: center;
+            /* vertical */
+            min-height: 100vh;
+            background-color: #0088ff;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            animation: rainbow 8s linear infinite;
+            font-weight: bold;
+
+            background: linear-gradient(30deg,
+                    #00ffff,
+                    #0088ff,
+                    #7f5fff,
+                    #ff00ff,
+                    #ffaa00,
+                    #ffff00,
+                    #00ffff);
+
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbowShift 6s linear infinite;
+        }
+
+        @keyframes rainbowShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 400% 50%;
+            }
+        }
+
+        @keyframes rainbow {
+            0% {
+                color: #00ffff;
+            }
+
+            /* cyan */
+            16% {
+                color: #00aaff;
+            }
+
+            /* blue */
+            33% {
+                color: #7f5fff;
+            }
+
+            /* violet */
+            50% {
+                color: #ff00ff;
+            }
+
+            /* magenta */
+            66% {
+                color: #ff8800;
+            }
+
+            /* orange */
+            83% {
+                color: #ffff00;
+            }
+
+            /* yellow */
+            100% {
+                color: #00ffff;
+            }
+
+            /* back to cyan */
+        }
+    </style>
+    <script type="module">
+        import { Dream } from './dream/dream.js';
+        const [getColors, setColors] = Dream.useState(["#7f5fff", "#ff00ff", "#ffaa00", "#ffff00", "#00ffff"]);
+        Dream.register("mutate", "#0088ff");
+
+        const View = () => {
+            return {
+                el: 'div',
+                a: [{ id: "app", style: "display: flex; flex-direction: column; flex-wrap: wrap; justify-content: center; align-content: center; text-align: center; height: 100vh; width: 100vw;" }],
+                children: [
+                    {
+                        el: 'h1',
+                        a: [{ 'data-action': "mutate", style: "font-family: 'Script MT';font-size: 72px;cursor:pointer;" }],
+                        children: [
+                            {
+                                content: 'Dream.js'
+                            }
+                        ]
+                    },
+                    {
+                        el: 'h3',
+                        children: [{
+                            content: 'Lightweight DOM Serialization & Rendering Library'
+                        }]
+                    }
+                ]
+            }
+        }
+
+        Dream.subscribe("mutate", (c, p) => {
+            document.body.style.backgroundColor = c;
+        });
+
+        const App = () => {
+            const elToWatch = document.querySelector('[data-action="mutate"]');
+            elToWatch.addEventListener('click', () => {
+                let color = [...getColors()];
+                let currentColor = Dream.state.mutate;
+                color.push(currentColor);
+                let newColor = color.shift();
+                setColors(color);
+                Dream.state.mutate = newColor;
+            });
+        };
+
+
+        Dream.onReady({
+            node: View()
+        }, App);
+
+    </script>
+</body>
+
+</html>
+```
+
+
 ---
 
 ## License
