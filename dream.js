@@ -14,7 +14,7 @@
  * Author: Michael Dennis
  * Project: Dream JS
  * Name: dream.js
- * Version: v1.1.0
+ * Version: v1.1.1
  * License: MIT
  * Copyright (c) 2026 Michael Dennis
  *
@@ -37,7 +37,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const VERSION = "1.1.0";
+const VERSION = "1.1.1";
 
 /**
  * Builds a DOM node from a Dream.js object definition.
@@ -62,12 +62,25 @@ function buildDom(node) {
         return fragment;
     }
     // Text node
-    if (node.el === null || node.el === undefined) {
+    if (node.el === null || node.el === undefined && node.content) {
         return document.createTextNode(node.content || "");
     }
 
-    // Element node
-    const element = document.createElement(node.el);
+    let element = null;
+
+    if (typeof node.el === "string") {
+        let tempEl = document.getElementById(node.el);
+        if (tempEl) {
+            element = tempEl;
+        } else {
+            // Element node
+            element = document.createElement(node.el);
+        }
+    } else if (node.el instanceof Node) {
+        element = node.el;
+    } else {
+        element = document.body;
+    }
 
     // Attributes
     if (Array.isArray(node.a)) {
@@ -203,13 +216,23 @@ const render = ({ el, node }) => {
     } else {
         _e = document.body;
     }
-    if (_e) {
-        if (node instanceof Node) {
-            _e.appendChild(node);
-        } else {
-            _e.appendChild(buildDom(node));
+
+    console.log(_e);
+
+    if (node instanceof Node) {
+        _e.appendChild(node);
+        return _e;
+    } else {
+        console.log(_e, node)
+        const b = buildDom(node);
+        console.log(b);
+        if (b === _e) {
+            return b;
         }
+        _e.appendChild(b);
+        return _e;
     }
+
 }
 
 /**
@@ -229,8 +252,9 @@ const update = ({ el, node }, fn = () => { }) => {
         _e = document.body;
     }
     _e.innerHTML = "";
-    render({ el, node });
-    fn();
+    const newElRef = render({ el, node });
+    fn(newElRef);
+    return newElRef;
 }
 
 /**
@@ -304,10 +328,10 @@ const register = (name, initial) => {
             return value;
         },
         set(newValue) {
-            if (value === newValue) {
+            const oldValue = value;
+            if (!Array.isArray(value) && value === newValue) {
                 return;
             }
-            const oldValue = value;
             value = newValue;
             registry[name].subscribers.forEach(callback => {
                 callback(newValue, oldValue);
